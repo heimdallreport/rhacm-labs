@@ -2,8 +2,8 @@
 apiVersion: apps.open-cluster-management.io/v1
 kind: Channel
 metadata:
-  name: etherpad-app-latest
-  namespace: etherpad
+  name: etherpad-app-test-latest
+  namespace: etherpad-test
 spec:
   type: GitHub
   pathname: https://github.com/heimdallreport/rhacm-labs.git
@@ -11,8 +11,8 @@ spec:
 apiVersion: app.k8s.io/v1beta1
 kind: Application
 metadata:
-  name: etherpad-app
-  namespace: etherpad
+  name: etherpad-app-test
+  namespace: etherpad-test
 spec:
   componentKinds:
   - group: apps.open-cluster-management.io
@@ -23,21 +23,34 @@ spec:
     - key: app
       operator: In
       values:
-      - etherpad-app
+      - etherpad-app-test
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: dev-clusters-test
+  namespace: etherpad-test
+spec:
+  clusterConditions:
+    - type: ManagedClusterConditionAvailable
+      status: "True"
+  clusterSelector:
+    matchLabels:
+      env: test
 ---
 apiVersion: apps.open-cluster-management.io/v1
 kind: Subscription
 metadata:
-  name: etherpad-app
-  namespace: etherpad
+  name: etherpad-app-test
+  namespace: etherpad-test
   labels:
-    app: etherpad-app
+    app: etherpad-app-test
   annotations:
     apps.open-cluster-management.io/github-path: resources/etherpad
 spec:
-  channel: etherpad/etherpad-app-latest
+  channel: etherpad-test/etherpad-app-test-latest
   placement:
     placementRef:
       kind: PlacementRule
-      name: dev-clusters
+      name: dev-clusters-test
 
